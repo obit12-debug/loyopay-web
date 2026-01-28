@@ -1061,7 +1061,7 @@
         // 1. Fonction de test (Connectée à Render)
         function testerLeServeur() {
             // REMPLACE 'TON-LINK-RENDER' PAR TON VRAI LIEN RENDER
-            fetch('https://loyopay-server.onrender.com/api/test')
+            fetch('https://loyopay-api.onrender.com/api/test')
                 .then(response => response.json())
                 .then(data => {
                     alert("✅ Réussi ! " + data.message);
@@ -1091,7 +1091,7 @@
             console.log("Envoi vers le serveur :", { phone, role });
 
             // REMPLACE 'TON-LINK-RENDER' PAR TON VRAI LIEN RENDER
-            fetch('https://loyopay-server.onrender.com/api/signup', {
+            fetch('https://loyopay-api.onrender.com/api/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1122,7 +1122,7 @@
             console.log("Tentative de connexion vers le serveur...");
 
             // REMPLACE 'TON-LINK-RENDER' PAR TON VRAI LIEN RENDER
-            fetch('https://loyopay-server.onrender.com/api/login', {
+            fetch('https://loyopay-api.onrender.com/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
