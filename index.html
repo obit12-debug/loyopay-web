@@ -1127,21 +1127,23 @@
             })
             .then(response => response.json())
                 .then(data => {
-        if (data.message === "Connexion réussie !") {
-            // --- NOUVEAU CODE : SAUVEGARDER DANS LOCALSTORAGE ---
-            // On transforme l'objet utilisateur en texte pour le stocker
-            localStorage.setItem('loyopay_user', JSON.stringify(data.user));
+                if (data.message === "Connexion réussie !") {
             
-            console.log("✅ Utilisateur connecté et sauvegardé !", data.user);
+            console.log("...");
             
-            // On affiche une petite alerte amiciale (on fera mieux plus tard)
-            alert("👋 Bonjour " + data.user.role + " ! Vous êtes connecté.");
+            // ... (autres instructions)
             
-            // On recharge la page pour activer le mode "Connecté"
-            window.location.reload();
-            localStorage.setItem('loyopay_user', JSON.stringify(data.user));
+            // C'est ICI qu'on sauvegarde
+            try {
+                localStorage.setItem('loyopay_user', JSON.stringify(data.user));
+            } catch (error) {
+                console.error(...);
+            }
+
+            alert("...");
+
         } else {
-            alert("❌ Erreur : " + data.message);
+            alert("...");
         }
     })
     // Fonction pour vérifier si l'utilisateur est connecté au démarrage
