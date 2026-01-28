@@ -1139,6 +1139,7 @@
             
             // On recharge la page pour activer le mode "Connecté"
             window.location.reload();
+            localStorage.setItem('loyopay_user', JSON.stringify(data.user));
         } else {
             alert("❌ Erreur : " + data.message);
         }
