@@ -1126,17 +1126,61 @@
                 body: JSON.stringify({ phone, password })
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.message === "Connexion réussie !") {
-                    alert("✅ " + data.message + "\nBienvenue " + data.user.role + " !");
-                } else {
-                    alert("❌ Erreur : " + data.message);
-                }
-            })
-            .catch(error => {
-                console.error(error);
-                alert("Erreur de connexion au serveur.");
-            });
+                .then(data => {
+        if (data.message === "Connexion réussie !") {
+            // --- NOUVEAU CODE : SAUVEGARDER DANS LOCALSTORAGE ---
+            // On transforme l'objet utilisateur en texte pour le stocker
+            localStorage.setItem('loyopay_user', JSON.stringify(data.user));
+            
+            console.log("✅ Utilisateur connecté et sauvegardé !", data.user);
+            
+            // On affiche une petite alerte amiciale (on fera mieux plus tard)
+            alert("👋 Bonjour " + data.user.role + " ! Vous êtes connecté.");
+            
+            // On recharge la page pour activer le mode "Connecté"
+            window.location.reload();
+        } else {
+            alert("❌ Erreur : " + data.message);
+        }
+    })
+    // Fonction pour vérifier si l'utilisateur est connecté au démarrage
+function verifierSession() {
+    const userString = localStorage.getItem('loyopay_user');
+    
+    if (userString) {
+        // Il y a quelqu'un dans le tiroir !
+        const user = JSON.parse(userString);
+        
+        console.log("👋 Utilisateur trouvé : ", user.role);
+
+        // 1. Cacher les formulaires d'inscription/connexion
+        const formulaire = document.querySelector('.signup-container');
+        formulaire.style.display = 'none';
+
+        // 2. Afficher un message de bienvenue (on fera un vrai dashboard plus tard)
+        const container = document.querySelector('.container'); // Le conteneur principal
+        const welcomeDiv = document.createElement('div');
+        welcomeDiv.style.textAlign = 'center';
+        welcomeDiv.style.padding = '40px';
+        welcomeDiv.innerHTML = `
+            <h2 style="color:var(--primary-color)">Bienvenue sur LoyoPay !</h2>
+            <p style="font-size:1.2rem">Vous êtes connecté en tant que <strong>${user.role}</strong>.</p>
+            <button onclick="deconnecter()" class="btn btn-secondary" style="margin-top:20px;">Se déconnecter</button>
+        `;
+        
+        // On insère le message après le titre principal de la page
+        const heroTitle = document.querySelector('.hero-text h1');
+        heroTitle.parentNode.insertBefore(welcomeDiv, heroTitle.nextSibling);
+    } else {
+        console.log("Personne connecté. Affichage normal.");
+    }
+}
+// Fonction pour se déconnecter
+function deconnecter() {
+    localStorage.removeItem('loyopay_user');
+    alert("Vous avez été déconnecté.");
+    window.location.reload();
+}
         }
     </script>
 
@@ -1161,5 +1205,9 @@
 
         console.log("Firebase initialisé avec succès !");
     </script>
+    // Au chargement de la page, on vérifie si on est connecté
+document.addEventListener('DOMContentLoaded', () => {
+    verifierSession();
+});
 </body>
 </html>
