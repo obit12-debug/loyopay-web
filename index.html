@@ -15,6 +15,9 @@
 
     <style>
         /* --- VARIABLES CSS --- */
+            .hidden {
+        display: none !important;
+    }
         :root {
             /* Couleurs principales */
             --primary-color: #0056b3; /* Bleu rassurant */
@@ -1150,35 +1153,62 @@
         }
     })
     // Fonction pour vérifier si l'utilisateur est connecté au démarrage
+// Fonction pour vérifier si l'utilisateur est connecté au démarrage (Version plus robuste)
 function verifierSession() {
+    console.log("🔍 [DEBUG] Vérification de session lancée...");
+
+    // On regarde si on a un token de session (un "ticket de connexion" stocké)
     const userString = localStorage.getItem('loyopay_user');
-    
+
     if (userString) {
-        // Il y a quelqu'un dans le tiroir !
+        // 1. Il y a quelqu'un dans le tiroir !
         const user = JSON.parse(userString);
-        
-        console.log("👋 Utilisateur trouvé : ", user.role);
+        console.log("👋 [DEBUG] Utilisateur trouvé : ", user.role);
 
-        // 1. Cacher les formulaires d'inscription/connexion
-        const formulaire = document.querySelector('.signup-container');
-        formulaire.style.display = 'none';
+        // 2. Cacher spécifiquement les formulaires d'inscription et de connexion
+        const formInscription = document.getElementById('signup-form'); // Le formulaire d'inscription
+        const formConnexion = document.getElementById('login-form'); // Le formulaire de connexion
 
-        // 2. Afficher un message de bienvenue (on fera un vrai dashboard plus tard)
-        const container = document.querySelector('.container'); // Le conteneur principal
+        // On cache les deux
+        if (formInscription) formInscription.style.display = 'none'; // Cache le formulaire d'inscription.
+        if (formConnexion) formConnexion.style.display = 'none'; // Cache le formulaire de connexion.
+
+        // 3. Afficher un message de bienvenue (on fera mieux qu'une simple alerte)
+
+        // On crée une nouvelle div (message de bienvenue)
+        const container = document.querySelector('.signup-container');
         const welcomeDiv = document.createElement('div');
         welcomeDiv.style.textAlign = 'center';
         welcomeDiv.style.padding = '40px';
-        welcomeDiv.innerHTML = `
-            <h2 style="color:var(--primary-color)">Bienvenue sur LoyoPay !</h2>
-            <p style="font-size:1.2rem">Vous êtes connecté en tant que <strong>${user.role}</strong>.</p>
-            <button onclick="deconnecter()" class="btn btn-secondary" style="margin-top:20px;">Se déconnecter</button>
-        `;
+        // On l'insère juste après le titre "Rejoignez LoyoPay"
+        const titre = document.querySelector('.signup-container h2'); // Le titre principal de la section inscription
+        if (titre) {
+            titre.parentNode.insertBefore(welcomeDiv, titre);
+        }
+
+        const welcomeMessage = document.createElement('p');
+        welcomeMessage.innerHTML = `👋 Bonjour ${user.role === 'owner' ? 'Propriétaire' : 'Locataire'} ! Vous êtes connecté.`;
+        welcomeMessage.style.marginTop = '20px';
+        welcomeMessage.style.fontWeight = 'bold';
+        welcomeMessage.style.color = 'var(--primary-color)';
         
-        // On insère le message après le titre principal de la page
-        const heroTitle = document.querySelector('.hero-text h1');
-        heroTitle.parentNode.insertBefore(welcomeDiv, heroTitle.nextSibling);
+        welcomeDiv.appendChild(welcomeMessage);
+
+        // Ajoute un bouton pour qu'il puisse se déconnecter
+        const disconnectButton = document.createElement('button');
+        disconnectButton.className = 'btn btn-secondary';
+        disconnectButton.textContent = "Se déconnecter";
+        disconnectButton.onclick = deconnecter;
+        disconnectButton.style.marginTop = '10px';
+
+        welcomeDiv.appendChild(disconnectButton);
+
+        // On insère ce bloc de bienvenue dans le conteneur
+        container.prepend(welcomeDiv); // Ajoute en haut du conteneur
+        container.style.background = 'white'; // S'assure qu'on voit le message
+
     } else {
-        console.log("Personne connecté. Affichage normal.");
+        console.log("🚫 [DEBUG] Personne connecté. Affichage normal (les formulaires restent visibles.");
     }
 }
 // Fonction pour se déconnecter
