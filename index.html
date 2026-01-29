@@ -1154,69 +1154,52 @@
         }
     })
     // Fonction pour vérifier si l'utilisateur est connecté au démarrage
-// Fonction pour vérifier si l'utilisateur est connecté au démarrage (Version plus robuste)
-function verifierSession() {
-    console.log("🔍 [DEBUG] Vérification de session lancée...");
+        function verifierSession() {
+            console.log("🔍 [DEBUG] Lancement de la vérification de session...");
 
-    // On regarde si on a un token de session (un "ticket de connexion" stocké)
-    const userString = localStorage.getItem('loyopay_user');
+    // --- NOUVEAU CODE : ON CIBLE PAR ID ---
+    const formulaire = document.getElementById('signup-form'); // <--- C'EST ICI QU'EST CHANGÉ (Le sélecteur est défaillant, on prend l'ID direct).
 
-    if (userString) {
-        // 1. Il y a quelqu'un dans le tiroir !
-        const user = JSON.parse(userString);
-        console.log("👋 [DEBUG] Utilisateur trouvé : ", user.role);
+    console.log("🔍 [DEBUG] Formulaire trouvé :", formulaire); // Affiche "object HTML... <form id="signup-form">"
 
-        // 2. Cacher spécifiquement les formulaires d'inscription et de connexion
-        const formInscription = document.getElementById('signup-form'); // Le formulaire d'inscription
-        const formConnexion = document.getElementById('login-form'); // Le formulaire de connexion
+    if (formulaire) {
+        console.log("👁 [DEBUG] Formulaire est trouvé ! On cache le formulaire.");
+        formulaire.style.display = 'none'; // On le cache.
 
-        // On cache les deux
-        if (formInscription) formInscription.style.display = 'none'; // Cache le formulaire d'inscription.
-        if (formConnexion) formConnexion.style.display = 'none'; // Cache le formulaire de connexion.
+        const userString = localStorage.getItem('loyopay_user');
+    
+        if (userString) {
+            const user = JSON.parse(userString);
+            console.log("👋 [DEBUG] Utilisateur trouvé : ", user.role);
 
-        // 3. Afficher un message de bienvenue (on fera mieux qu'une simple alerte)
+            // --- AFFICHAGE DU MESSAGE ---
+            const container = document.querySelector('.container'); // On cible le grand conteneur
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.style.textAlign = 'center';
+            welcomeDiv.style.padding = '40px';
+            welcomeDiv.style.backgroundColor = '#e0f2fe'; // Petit fond bleu pour voir que ça marche.
+            welcomeDiv.innerHTML = `
+                <h2 style="color:var(--primary-color)">Bienvenue sur LoyoPay !</h2>
+                <p style="font-size: 1.2rem">Vous êtes connecté en tant que <strong>${user.role}</strong>.</p>
+                <button onclick="deconnecter()" class="btn btn-secondary" style="margin-top:20px;">Se déconnecter</button>
+            `;
 
-        // On crée une nouvelle div (message de bienvenue)
-        const container = document.querySelector('.signup-container');
-        const welcomeDiv = document.createElement('div');
-        welcomeDiv.style.textAlign = 'center';
-        welcomeDiv.style.padding = '40px';
-        // On l'insère juste après le titre "Rejoignez LoyoPay"
-        const titre = document.querySelector('.signup-container h2'); // Le titre principal de la section inscription
-        if (titre) {
-            titre.parentNode.insertBefore(welcomeDiv, titre);
-        }
-
-        const welcomeMessage = document.createElement('p');
-        welcomeMessage.innerHTML = `👋 Bonjour ${user.role === 'owner' ? 'Propriétaire' : 'Locataire'} ! Vous êtes connecté.`;
-        welcomeMessage.style.marginTop = '20px';
-        welcomeMessage.style.fontWeight = 'bold';
-        welcomeMessage.style.color = 'var(--primary-color)';
-        
-        welcomeDiv.appendChild(welcomeMessage);
-
-        // Ajoute un bouton pour qu'il puisse se déconnecter
-        const disconnectButton = document.createElement('button');
-        disconnectButton.className = 'btn btn-secondary';
-        disconnectButton.textContent = "Se déconnecter";
-        disconnectButton.onclick = deconnecter;
-        disconnectButton.style.marginTop = '10px';
-
-        welcomeDiv.appendChild(disconnectButton);
-
-        // On insère ce bloc de bienvenue dans le conteneur
-        container.prepend(welcomeDiv); // Ajoute en haut du conteneur
-        container.style.background = 'white'; // S'assure qu'on voit le message
-
-    } else {
-        console.log("🚫 [DEBUG] Personne connecté. Affichage normal (les formulaires restent visibles.");
+            const heroTitle = document.querySelector('.hero-text h1');
+            if (heroTitle) {
+                heroTitle.parentNode.insertBefore(welcomeDiv, heroTitle.nextSibling);
+            }
+        } else {
+            console.log("🚫 [DEBUG] Personne connecté. Affichage normal.");
     }
 }
-// Fonction pour se déconnecter
+
+// Fonction pour se déconnecter (Vider le localStorage)
 function deconnecter() {
-    localStorage.removeItem('loyopay_user');
+    localStorage.removeItem('loyopay-user');
     alert("Vous avez été déconnecté.");
+    // Recharger la page (l'état initial)
     window.location.reload();
+}
 }
         }
     </script>
@@ -1248,4 +1231,3 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </body>
 </html>
-
