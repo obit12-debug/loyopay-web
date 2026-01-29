@@ -1127,19 +1127,24 @@
             })
             .then(response => response.json())
                 .then(data => {
-        if (data.message === "Connexion réussie !") {
-            // --- NOUVEAU CODE : SAUVEGARDER DANS LOCALSTORAGE ---
-            // On transforme l'objet utilisateur en texte pour le stocker
-            localStorage.setItem('loyopay_user', JSON.stringify(data.user));
+                if (data.message === "Connexion réussie !") {
             
             console.log("✅ Utilisateur connecté et sauvegardé !", data.user);
             
-            // On affiche une petite alerte amiciale (on fera mieux plus tard)
+            // --- SAUVEGARDE SÉCURISÉE ---
+            try {
+                // On transforme l'objet utilisateur en texte pour le stocker
+                localStorage.setItem('loyopay_user', JSON.stringify(data.user));
+                console.log("📦 Données sauvegardées dans localStorage.");
+            } catch (error) {
+                console.error("Erreur lors de la sauvegarde locale :", error);
+            }
+            
+            // On affiche une petite alerte amiciale
             alert("👋 Bonjour " + data.user.role + " ! Vous êtes connecté.");
             
             // On recharge la page pour activer le mode "Connecté"
             window.location.reload();
-            localStorage.setItem('loyopay_user', JSON.stringify(data.user));
         } else {
             alert("❌ Erreur : " + data.message);
         }
